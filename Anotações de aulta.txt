@@ -1,3 +1,7 @@
-Aula 31/07
-
+- Aula 31/07
+  *Modelo de Entidade Relacionamento Conceitual (MER)
+  * Conveções SQL( Camel_Case, snake_case...)
+  * MER --> evitar duplicidade de dados e faciliar seus relacionamentos
+  * Ferramenta "BRModelo"
+  * 
   
