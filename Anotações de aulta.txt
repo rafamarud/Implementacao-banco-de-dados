@@ -1,4 +1,91 @@
-- Aula 31/07
+- 14/08 -
+-- DISTINCT --
+SELECT DISTINCT F.Salario
+FROM FUNCIONARIO AS F;
+
+
+-- WHERE --
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.PNome = 'Carlos';
+
+
+
+-- AND --
+SELECT *
+FROM FUNCIONARIO AS F
+
+WHERE F.Sexo = 'M' and F.Salario >= 30000;
+
+
+
+-- OR --
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.Endereco LIKE '%São Paulo%' 
+	OR F.Endereco LIKE '%Curitiba%';
+
+
+
+-- NOT --
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE NOT
+	F.Endereco LIKE '%São Paulo%';
+
+
+
+-- ORDER BY --
+SELECT 
+	F.Pnome AS 'Nome', F.Minicial AS 'Sobrenome', 
+	F.Salario,
+	F.Salario * 12 AS 'CustoAnual'
+FROM FUNCIONARIO AS F
+ORDER BY CustoAnual DESC
+
+SELECT *
+FROM FUNCIONARIO AS F;
+
+-- IS NULLL --
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.Cpf_supervisor IS NULL;
+
+
+
+-- IS NOT NULL --
+SELECT * 
+FROM FUNCIONARIO AS F
+WHERE F.Cpf_supervisor IS NOT NULL;
+
+
+
+-- TOP / MYSQL = LIMIT--
+SELECT TOP 3 *
+FROM FUNCIONARIO AS F
+ORDER BY F.Salario DESC;
+
+
+
+-- MIN() MAX()--
+SELECT MIN(Salario) 
+FROM FUNCIONARIO;
+
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.Salario = (SELECT MIN (Salario) FROM FUNCIONARIO);
+
+	-- NAO SALVA NA MEMÓRIA --
+	DECLARE @salario_min DECIMAL(10,2);
+	SET @salario_min = (SELECT MIN (Salario) FROM FUNCIONARIO);
+	PRINT @salario_min;
+
+	SELECT * 
+	FROM FUNCIONARIO AS F
+	WHERE F.Salario = @salario_min
+	PRINT @salario_min;
+
+- Aula 31/07 -
   *Modelo de Entidade Relacionamento Conceitual (MER)
   * Conveções SQL( Camel_Case, snake_case...)
   * MER --> evitar duplicidade de dados e faciliar seus relacionamentos
