@@ -1,4 +1,5 @@
 - 14/08 -
+
 -- DISTINCT --
 SELECT DISTINCT F.Salario
 FROM FUNCIONARIO AS F;
@@ -84,6 +85,48 @@ WHERE F.Salario = (SELECT MIN (Salario) FROM FUNCIONARIO);
 	FROM FUNCIONARIO AS F
 	WHERE F.Salario = @salario_min
 	PRINT @salario_min;
+
+-- COUNT --
+SELECT COUNT(F.Cpf)
+FROM FUNCIONARIO AS F
+
+SELECT COUNT(D.Nome_dependente)
+FROM DEPENDENTE AS D
+
+SELECT COUNT(F.Cpf) + COUNT(D.Nome_dependente)
+FROM FUNCIONARIO AS F, DEPENDENTE AS D
+
+SELECT
+	(SELECT COUNT(F.Cpf) FROM FUNCIONARIO AS F) + (SELECT COUNT(D.Nome_dependente)FROM DEPENDENTE AS D)
+	AS 'QtdPessoas'
+
+
+
+--AVG--
+SELECT AVG(F.Salario) AS MediaSalarial
+FROM FUNCIONARIO AS F
+
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.Salario < (SELECT AVG(F.Salario) AS MediaSalarial FROM FUNCIONARIO AS F)
+ORDER BY F.Salario ASC;
+
+
+
+--SUM--
+SELECT SUM(F.Salario) * 12 AS 'CustoANual'
+FROM FUNCIONARIO AS F
+
+
+
+--LIKE--
+SELECT *
+FROM FUNCIONARIO AS F
+WHERE F.Datanasc LIKE '1972%';
+
+
+
+
 
 - Aula 31/07 -
   *Modelo de Entidade Relacionamento Conceitual (MER)
