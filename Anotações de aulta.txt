@@ -1,3 +1,327 @@
+- 28/08 -
+-- INNER JOIN --
+--Selecionar o primeiro nome, último nome, endereço dos funcionários que trabalham no departamento de “Pesquisa”.
+SELECT F.Pnome, F.Unome, D.Dnome 
+FROM Funcionario AS F
+INNER JOIN Departamento AS D 
+    ON Dnumero = Dnr 
+WHERE Dnome = 'Pesquisa';
+
+--Liste o nome dos funcionários que estão desenvolvendo o “ProdutoX”. 
+SELECT F.Pnome, P.Projnome
+FROM Funcionario AS F
+INNER JOIN TRABALHA_EM AS T 
+    ON F.Cpf = T.Fcpf
+INNER JOIN PROJETO AS P 
+    ON T.Pnr = P.Projnumero
+WHERE P.Projnome = 'ProdutoX';
+
+--Para cada projeto localizado em “Mauá”, liste o número do projeto, o número do departamento que o controla e o sobrenome, endereço e data de nascimento do gerente do departamento.
+SELECT Projnumero, Dnum, Unome,
+Endereco, Datanasc
+FROM PROJETO 
+INNER JOIN DEPARTAMENTO
+ON Dnum=Dnumero 
+INNER JOIN FUNCIONARIO 
+ON Cpf_gerente =Cpf
+WHERE Projlocal='Mauá';
+
+-- LEFT JOIN --
+-- Econtre os funcionarios que não possuem um departamento a eles vinculado
+SELECT *
+FROM FUNCIONARIO
+LEFT JOIN DEPARTAMENTO 
+    ON  FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero;
+
+-- Encontre os departamentos que não possuem nenhum funcionário
+SELECT 
+    DEPARTAMENTO.Dnome,
+    DEPARTAMENTO.Dnumero
+FROM 
+    DEPARTAMENTO
+LEFT JOIN 
+    FUNCIONARIO 
+ON 
+    DEPARTAMENTO.Dnumero = FUNCIONARIO.Dnr
+WHERE 
+    FUNCIONARIO.Dnr IS NULL;
+
+-- Exemplo 2
+SELECT 
+    Dnome, 
+    Dnumero
+FROM 
+    DEPARTAMENTO
+WHERE 
+    Dnumero NOT IN (SELECT Dnr FROM FUNCIONARIO WHERE Dnr IS NOT NULL);
+
+-- Exemplo 3
+SELECT 
+    Dnome, 
+    Dnumero
+FROM 
+    DEPARTAMENTO d
+WHERE 
+    NOT EXISTS (
+        SELECT 1 
+        FROM FUNCIONARIO f 
+        WHERE f.Dnr = d.Dnumero
+    );
+
+
+-- RIGHT JOIN --
+SELECT *   
+FROM  FUNCIONARIO
+RIGHT JOIN 
+    DEPARTAMENTO 
+ON 
+    FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero;
+
+-- FULL JOIN --
+SELECT  *
+FROM FUNCIONARIO
+FULL JOIN 
+    DEPARTAMENTO 
+ON 
+    FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero;
+
+-- SELF JOIN --
+SELECT
+    F.Pnome AS Nome_Funcionario,
+    F.Unome AS Sobrenome_Funcionario,
+    
+    S.Pnome AS Nome_Supervisor,
+    S.Unome AS Sobrenome_Supervisor
+FROM
+    FUNCIONARIO AS F
+    
+JOIN
+    FUNCIONARIO AS S ON F.Cpf_supervisor = S.Cpf;
+
+
+--  UNION/INTERSECT/EXCEPT
+-- UNION --: 
+-- Listar todos os nomes únicos de projetos e departamentos.
+SELECT Dnome AS Nome
+FROM DEPARTAMENTO
+
+UNION
+
+SELECT Projnome AS Nome
+FROM PROJETO;
+
+--Imagine que a diretoria da empresa quer uma lista de todas as cidades onde a empresa possui alguma atividade, seja a localização de um departamento ou a localização de um projeto.
+SELECT Dlocal AS Cidade
+FROM LOCALIZACAO_DEP
+
+UNION 
+
+SELECT Projlocal AS Cidade
+FROM PROJETO;
+
+-- UNION ALL --
+
+SELECT Dlocal AS Cidade
+FROM LOCALIZACAO_DEP
+
+UNION ALL
+
+SELECT Projlocal AS Cidade
+FROM PROJETO;
+
+-- EXCEPT --: Retorna as linhas da primeira consulta que não estão presentes na segunda consulta.
+-- Listar os CPFs dos funcionários que não são gerentes de nenhum departamento.
+SELECT Cpf
+FROM FUNCIONARIO
+
+EXCEPT
+
+SELECT Cpf_gerente
+FROM DEPARTAMENTO;
+
+-- Encontre os Funcionários que NÃO são Supervisores
+SELECT Pnome, Unome
+FROM FUNCIONARIO
+WHERE Cpf IN (
+    SELECT Cpf FROM FUNCIONARIO
+    
+    EXCEPT 
+    
+    SELECT Cpf_supervisor FROM FUNCIONARIO WHERE Cpf_supervisor IS NOT NULL
+);
+
+-- INTERSECT --: Retorna apenas as linhas que aparecem em ambas as consultas.
+-- Encontrar CPF de funcionários que também são gerentes de departamento.
+
+SELECT Cpf
+FROM FUNCIONARIO
+
+INTERSECT
+
+SELECT Cpf_gerente
+FROM DEPARTAMENTO;
+
+-- Encontre os Funcionários que são Supervisores
+SELECT Pnome, Unome
+FROM FUNCIONARIO
+WHERE Cpf IN (
+    SELECT Cpf FROM FUNCIONARIO
+    
+    INTERSECT 
+
+    SELECT Cpf_supervisor FROM FUNCIONARIO
+);
+
+
+-- GROUP BY --
+--Contar o número de funcionários por departamento
+SELECT 
+    DEPARTAMENTO.Dnome, 
+    COUNT(FUNCIONARIO.Cpf) AS NumeroFuncionarios
+FROM 
+    FUNCIONARIO
+JOIN 
+    DEPARTAMENTO ON FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero
+GROUP BY 
+    DEPARTAMENTO.Dnome;
+
+--Somar os salários por departamento
+SELECT 
+    DEPARTAMENTO.Dnome, 
+    SUM(FUNCIONARIO.Salario) AS SalarioTotal
+FROM 
+    FUNCIONARIO
+JOIN 
+    DEPARTAMENTO ON FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero
+GROUP BY 
+    DEPARTAMENTO.Dnome;
+
+-- Média de horas trabalhadas por projeto
+SELECT 
+    PROJETO.Projnome, 
+    AVG(TRABALHA_EM.Horas) AS MediaHorasTrabalhadas
+FROM 
+    TRABALHA_EM
+JOIN 
+    PROJETO ON TRABALHA_EM.Pnr = PROJETO.Projnumero
+GROUP BY 
+    PROJETO.Projnome;
+
+-- Quantidade de funcionários por sexo
+SELECT 
+    Sexo, 
+    COUNT(*) AS NumeroFuncionarios
+FROM 
+    FUNCIONARIO
+GROUP BY 
+    Sexo;
+
+--Maior salário em cada departamento
+SELECT 
+    DEPARTAMENTO.Dnome, 
+    MAX(FUNCIONARIO.Salario) AS MaiorSalario
+FROM 
+    FUNCIONARIO
+JOIN 
+    DEPARTAMENTO ON FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero
+GROUP BY 
+    DEPARTAMENTO.Dnome;
+
+--Número de projetos em cada local
+-- COUNT(*) -- : Conta todas as linhas da tabela ou do conjunto de resultados que correspondem às condições da consulta. Isso inclui todas as linhas, mesmo que todas as colunas contenham valores nulos
+SELECT 
+    Projlocal, 
+    COUNT(*) AS NumeroProjetos
+FROM 
+    PROJETO
+GROUP BY 
+    Projlocal;
+
+-- HAVING --
+--Encontrar departamentos com mais de 3 funcionários
+SELECT 
+    DEPARTAMENTO.Dnome, 
+    COUNT(FUNCIONARIO.Cpf) AS NumeroFuncionarios
+FROM 
+    FUNCIONARIO
+JOIN 
+    DEPARTAMENTO ON FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero
+GROUP BY 
+    DEPARTAMENTO.Dnome
+HAVING 
+    COUNT(FUNCIONARIO.Cpf) > 3;
+
+-- Listar projetos que exigem mais de no mínimo 50 horas de trabalho no total
+SELECT 
+    PROJETO.Projnome, 
+    SUM(TRABALHA_EM.Horas) AS TotalHoras
+FROM 
+    TRABALHA_EM
+JOIN 
+    PROJETO ON TRABALHA_EM.Pnr = PROJETO.Projnumero
+GROUP BY 
+    PROJETO.Projnome
+HAVING 
+    SUM(TRABALHA_EM.Horas) >= 50;
+
+-- EXISTIS --
+-- Listar funcionários que são gerentes de algum departamento
+SELECT 
+    Pnome, 
+    Unome, 
+    Cpf
+FROM 
+    FUNCIONARIO
+WHERE 
+    EXISTS (
+        SELECT 1 
+        FROM DEPARTAMENTO 
+        WHERE DEPARTAMENTO.Cpf_gerente = FUNCIONARIO.Cpf
+    );
+
+--Listar departamentos que possuem projetos associados
+SELECT 
+    Dnome, 
+    Dnumero
+FROM 
+    DEPARTAMENTO
+WHERE 
+    EXISTS (
+        SELECT 1 
+        FROM PROJETO 
+        WHERE PROJETO.Dnum = DEPARTAMENTO.Dnumero
+    );
+
+-- ANY / ALL
+
+-- ANY --
+-- Encontrar funcionários que ganham mais do que qualquer funcionário do departamento de 'Administração
+
+SELECT  Pnome, Unome, Salario
+FROM FUNCIONARIO
+WHERE 
+    Salario > ANY (
+        SELECT Salario 
+        FROM FUNCIONARIO 
+        JOIN DEPARTAMENTO ON FUNCIONARIO.Dnr = DEPARTAMENTO.Dnumero
+        WHERE DEPARTAMENTO.Dnome = 'Administração'
+    );
+
+-- ALL --
+--Encontrar projetos que exigem mais horas do que todos os projetos no local 'São Paulo'
+SELECT  Projnome, SUM(TRABALHA_EM.Horas) AS TotalHoras
+FROM PROJETO
+JOIN TRABALHA_EM ON PROJETO.Projnumero = TRABALHA_EM.Pnr
+GROUP BY Projnome
+HAVING 
+    SUM(TRABALHA_EM.Horas) > ALL (
+        SELECT SUM(TRABALHA_EM.Horas) 
+        FROM PROJETO
+        JOIN TRABALHA_EM ON PROJETO.Projnumero = TRABALHA_EM.Pnr
+        WHERE PROJETO.Projlocal = 'São Paulo'
+        GROUP BY PROJETO.Projnumero
+    );
+
 - 14/08 -
 
 -- DISTINCT --
