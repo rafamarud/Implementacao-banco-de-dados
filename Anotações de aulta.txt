@@ -117,6 +117,35 @@ GO
 SELECT * FROM dbo.fn_salariAnual();
 
 
+-- PROCEDURE --
+
+CREATE PROCEDURE sp_exibe_meu_nome
+AS 
+BEGIN
+	PRINT 'Rafael Maruyama Dias';
+END
+GO;
+
+EXEC sp_exibe_meu_nome;
+
+GO;
+
+CREATE PROCEDURE sp_aumento(@porcentagem DECIMAL (3,1))
+AS
+BEGIN
+	UPDATE FUNCIONARIO
+	SET Salario = Salario * (1+(@porcentagem/100))
+	
+END
+GO
+
+EXEC dbo.sp_aumento @porcentagem = 5;
+SELECT * FROM FUNCIONARIO;
+
+EXEC sp_help FUNCIONARIO;
+
+
+
 
 
 
