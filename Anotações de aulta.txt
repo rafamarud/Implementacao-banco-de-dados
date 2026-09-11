@@ -145,6 +145,75 @@ SELECT * FROM FUNCIONARIO;
 EXEC sp_help FUNCIONARIO;
 
 
+ALTER PROCEDURE sp_aumento(
+	@porcentagem DECIMAL (3,1),
+	@cpf CHAR(11))
+	
+AS
+BEGIN
+	UPDATE FUNCIONARIO
+	SET Salario = Salario * (1+(@porcentagem/100))
+	WHERE Cpf = @cpf
+	
+END
+GO
+
+EXEC dbo.sp_aumento @porcentagem = 50, @cpf = 98765432300 ;
+SELECT * FROM FUNCIONARIO;
+
+
+
+	-- PROCEDURE CRIPTOGRAFADO -- 
+CREATE PROCEDURE sp_funcionarios
+WITH ENCRYPTION
+AS
+SELECT * FROM FUNCIONARIO
+GO
+
+EXEC sp_help sp_funcionarios;
+
+
+CREATE PROCEDURE sp_novo_dplc(
+	@departamento VARCHAR(50),
+	@localidade VARCHAR (50),
+	@numero INT
+	)
+AS
+
+BEGIN
+
+		IF EXISTS(SELECT 1 FROM DEPARTAMENTO WHERE Dnome = @departamento AND Dnumero = @numero)
+		BEGIN
+			PRINT 'Esse departamento ja existe'
+			
+			RETURN;
+		END
+	ELSE
+		BEGIN
+			INSERT INTO DEPARTAMENTO(Dnome, Dnumero)
+			VALUES (@departamento, @numero);
+			INSERT INTO LOCALIZACAO_DEP(Dlocal, Dnumero)
+			VALUES (@localidade, @numero)
+			PRINT @departamento + ' inserido com sucesso'
+			print @localidade + ' sinerido com sucesso'
+		END
+		
+
+END;
+
+EXEC dbo.sp_novo_dplc @departamento = lll, @localidade = ddd, @numero = 110;
+
+GO
+
+SELECT *
+FROM DEPARTAMENTO AS D
+JOIN LOCALIZACAO_DEP AS L
+ON D.Dnumero = L.Dnumero
+
+
+
+
+
 
 
 
