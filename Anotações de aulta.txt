@@ -2,6 +2,8 @@
 
 -- FUNÇÔES -- 
 
+	-- ESCALAR --
+
 CREATE OR ALTER FUNCTION fn_dobro(@Numero DECIMAL(10, 2))
 RETURNS DECIMAL(10,2)
 AS
@@ -28,6 +30,72 @@ SELECT
 	dbo.fn_dobro(F.Salario) AS 'Dobro'
 FROM FUNCIONARIO AS F
 WHERE F.Pnome = 'Carlos';
+
+## Salarios que são o dobro do menor
+
+DECLARE @menor_salario DECIMAL(10,2);
+SELECT @menor_salario = MIN(Salario)
+FROM FUNCIONARIO;
+PRINT @menor_salario
+SELECT
+	Pnome,
+	Unome,
+	F.Salario
+FROM FUNCIONARIO AS F
+WHERE F.Salario > dbo.fn_dobro(@menor_salario)
+
+	-- LINEAR --
+
+	CREATE OR ALTER FUNCTION fn_calcular_idade(@data_nasc DATE)
+	RETURNS INT
+	AS
+	BEGIN
+		DECLARE @idade INT;
+		SET @idade = DATEDIFF(YEAR, @data_nasc, GETDATE());
+		
+		IF (MONTH(@data_nasc) > MONTH(GETDATE())
+			OR (MONTH(@data_nasc) = MONTH(GETDATE()) AND DAY(@data_nasc) > DAY(GETDATE())))
+			SET @idade = @idade - 1;
+			
+		RETURN @idade;
+	END;
+	GO
+	
+	SELECT
+		D.Nome_dependente,
+		D.Datanasc,
+		dbo.fn_calcular_idade(D.Datanasc) AS 'Idade'
+	FROM DEPENDENTE AS D;
+	
+	SELECT 
+		F.Pnome,
+		F.Unome,
+		CONVERT(VARCHAR, F.Datanasc, 103) AS 'Data de Nascimento',
+		dbo.fn_calcular_idade (F.Datanasc) as 'Idade'
+	FROM FUNCIONARIO AS F
+
+CREATE FUNCTION fn_func_dpt(@nome_dpt VARCHAR(50))
+RETURNS TABLE
+AS
+RETURN(
+	SELECT
+		F.Pnome,
+		F.Unome
+	FROM FUNCIONARIO AS F
+	JOIN DEPARTAMENTO AS D
+	ON F.Dnr = D.Dnumero
+	WHERE D.Dnome = @nome_dpt
+);
+
+GO;
+
+SELECT *
+FROM dbo.fn_func_dpt('Pesquisa');
+
+	-- MULTI STATEMENT --
+
+
+
 
 
 
