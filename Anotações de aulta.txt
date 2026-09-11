@@ -1,4 +1,37 @@
 - 11/09 -
+
+-- FUNÇÔES -- 
+
+CREATE OR ALTER FUNCTION fn_dobro(@Numero DECIMAL(10, 2))
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+	RETURN @Numero *2;
+END;
+GO;
+
+
+SELECT dbo.fn_dobro(5);
+
+SELECT 
+	F.Pnome,
+	F.Unome,
+	F.Salario,
+	dbo.fn_dobro(F.Salario) AS 'Dobro'
+FROM FUNCIONARIO AS F
+WHERE F.Pnome = 'Maria';
+
+SELECT 
+	F.Pnome,
+	F.Unome,
+	F.Salario,
+	dbo.fn_dobro(F.Salario) AS 'Dobro'
+FROM FUNCIONARIO AS F
+WHERE F.Pnome = 'Carlos';
+
+
+
+
 -- DECLARAR VARIÁVEIS; DECLARE --
 
 DECLARE @Nome VARCHAR(100), @Numero INT,
@@ -36,10 +69,6 @@ WHILE (Condição)
 	begin
 	
 	end
-
--- FUNÇÕES --
-
-
 
 
 - 28/08 -
