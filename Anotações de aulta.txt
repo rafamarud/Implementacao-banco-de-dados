@@ -1,3 +1,47 @@
+- 11/09 -
+-- DECLARAR VARIÁVEIS; DECLARE --
+
+DECLARE @Nome VARCHAR(100), @Numero INT,
+
+SET @Numero = 10  (declarar valor)
+		OU
+SELECT @Nome = P.Nome
+FROM PESSOAS AS P
+WHERE ID = 10
+
+-- IF, ELSE IF e ELSE --
+
+IF (Condição) -- A > B OR B = C
+	begin
+		Bloco de código
+	end
+ELSE IF (Condição)
+ELSE
+
+-- IIF --
+
+IIF (Condição, "Verdadeiro", "Falso") -- Pode ser usado dentro do SELECT
+
+-- CASE --
+
+CASE 
+	WHEN (Condição) THEN " "
+	WHEN (Condição) THEN " "
+	ELSE
+END
+
+-- WHILE --
+
+WHILE (Condição)
+	begin
+	
+	end
+
+-- FUNÇÕES --
+
+
+
+
 - 28/08 -
 -- INNER JOIN --
 --Selecionar o primeiro nome, último nome, endereço dos funcionários que trabalham no departamento de “Pesquisa”.
