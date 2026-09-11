@@ -94,6 +94,27 @@ FROM dbo.fn_func_dpt('Pesquisa');
 
 	-- MULTI STATEMENT --
 
+CREATE FUNCTION fn_salariAnual()
+RETURNS @SalAno TABLE
+(
+	nome_comp VARCHAR(100),
+	salario DECIMAL(10,2),
+	salario_anual DECIMAL(10,2)
+
+)
+AS
+BEGIN
+	INSERT INTO @SalAno
+	SELECT
+		CONCAT(F.Pnome, ' ', F.Minicial, ' ', F.Unome),
+		F.Salario, 
+		F.Salario * 13 + (F.Salario * 0.3)
+	FROM FUNCIONARIO AS F;
+	RETURN;
+END;  
+GO
+
+SELECT * FROM dbo.fn_salariAnual();
 
 
 
