@@ -119,6 +119,41 @@ SELECT * FROM dbo.fn_salariAnual();
 
 -- PROCEDURE --
 
+1. Adicionar um funcionário, mas antes conferir se ele já existe.
+
+CREATE OR ALTER PROCEDURE dbo.sp_verifica_nome(
+	@Pnome VARCHAR (20),
+	@Minicial CHAR (1),
+	@Unome VARCHAR (20),
+	@Cpf VARCHAR (11))
+
+
+	
+AS
+BEGIN
+	IF EXISTS (SELECT 1 FROM FUNCIONARIO AS F WHERE F.Pnome = @Pnome AND Unome = @Unome, AND Minicial = @Minicial AND Cpf = @Cpf)
+	BEGIN
+		PRINT 'Já existe alguem com nome: ' +@Pnome ' ' +Minicial ', ' +@Unome 
+	END
+	ELSE
+	BEGIN
+		INSERT INTO FUNCIONARIO (Pnome, Minicial, Unome, Cpf)
+		VALUES(@Pnome,@Minicial, @Unome, @Cpf)
+	
+	PRINT 'Cadastro feito com sucesso'
+     END;
+END;
+GO
+
+EXEC dbo.sp_AdicioarFuncionario(
+	@Pnome = 'aaa',  
+	@Minicial = 'b',
+	@Unome = 'ccc',
+	@Cpf = '12345678901',
+	)
+
+
+
 CREATE PROCEDURE sp_exibe_meu_nome
 AS 
 BEGIN
