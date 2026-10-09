@@ -29,6 +29,204 @@ Sequencia de códigos executados em bloco
 	-@@ERROR
 	-@@ROWCOUNT
 
+CREATE DATABASE CAIXA
+
+-- Criação da tabela.
+CREATE TABLE conta(
+	id INT PRIMARY KEY,
+	nome VARCHAR(50),
+	Saldo MONEY
+);
+
+INSERT INTO CONTA
+VALUES (10, 'Maria', 500), 
+	   (20, 'Jõao', 1500),
+	   (30, 'Paulo', 30000),
+	   (40, 'Maria', 50000);
+
+-- Primeira Transação
+BEGIN TRAN;
+DECLARE @erro INT = 0;
+INSERT INTO CONTA
+VALUES (50, 'Pedro', 500); 
+SET @erro = @erro + @@ERROR
+INSERT INTO CONTA
+VALUES (10, 'Judas', 666);
+SET @erro = @erro + @@ERROR
+SELECT * FROM CONTA;
+IF @erro <> 0
+BEGIN
+	PRINT 'Transação revertida'
+	ROLLBACK TRAN;
+END
+ELSE
+BEGIN
+	PRINT 'Transação realizada com sucesso'
+	COMMIT TRAN;
+END
+
+SELECT * FROM CONTA
+
+
+BEGIN TRAN;
+UPDATE CONTA
+SET SALDO = SALDO + 10000
+WHERE Nome = 'Maria';
+IF @@ROWCOUNT <> 1
+BEGIN
+	SELECT * FROM CONTA;
+	ROLLBACK TRAN
+	SELECT * FROM CONTA;
+END
+ELSE
+	COMMIT TRAN
+
+GO
+-- Tansferir dinheiro de uma pessoa para outra
+
+CREATE OR ALTER PROCEDURE dbo.sp_transferencia 
+    @Transfere MONEY = 100000, 
+    @IdOrigem INT = 0,         
+    @IdDestino INT = 0        
+AS 
+BEGIN 
+     
+    BEGIN TRAN;
+
+    DECLARE @SaldoAux MONEY = 0; 
+
+    
+    UPDATE CONTA 
+    SET SALDO = SALDO - @Transfere 
+    WHERE id = @IdOrigem;
+
+    
+    UPDATE CONTA 
+    SET SALDO = SALDO + @Transfere 
+    WHERE id = @IdDestino;
+
+    
+    SELECT @SaldoAux = SALDO 
+    FROM CONTA 
+    WHERE id = @IdOrigem;
+
+    
+    IF @SaldoAux < 0 
+    BEGIN 
+        PRINT 'Transação negada';
+        ROLLBACK TRAN; 
+        
+        
+        SELECT * FROM CONTA WHERE id IN (@IdOrigem, @IdDestino);
+    END 
+    ELSE 
+    BEGIN 
+        PRINT 'Transação efetuada';
+        COMMIT TRAN; 
+
+       
+        SELECT * FROM CONTA WHERE id IN (@IdOrigem, @IdDestino);
+    END
+END;
+
+
+SELECT * FROM CONTA;
+
+GO
+-- Save point
+
+BEGIN TRAN;
+INSERT INTO conta
+VALUES(50, 'Pedro', 50);
+-- save point
+SAVE TRAN pedroOK
+INSERT INTo conta
+values(10, 'Juca', -200);
+IF @@ERROR <> 0
+BEGIN
+    ROLLBACK TRAN pedroOK
+    COMMIT TRAN;
+    PRINT 'Voltamos para o save point';
+END
+ELSE
+    COMMIT TRAN;
+SELECT * FROM conta;
+GO
+
+-- TRY e CATCH
+
+BEGIN TRY
+    PRINT 'Olá TRY CATCH';
+    SELECT 1/0; -- erro
+    PRINT 'NÃO CHEGUEI AQUI'
+END TRY
+BEGIN CATCH
+    PRINT 'DEU ERRO'
+    PRINT 'Número: ' + CAST(ERROR_NUMBER() AS VARCHAR (10));
+    PRINT 'Mensagem de ERRO: ' + ERROR_MESSAGE();
+END CATCH
+
+GO
+
+-- TRANSACTION + TRY CATCH
+BEGIN TRAN;
+    BEGIN TRY
+        INSERT INTO conta
+        VALUES(60, 'Mateus', 15);
+        SELECT * FROM CONTA
+        INSERT INTO conta
+        VALUES(10, 'Juca', -200);
+        COMMIT TRAN;
+        SELECT * FROM CONTA
+    END TRY
+    BEGIN CATCH
+        ROLLBACK
+        PRINT 'ERRO'
+        PRINT 'Número: ' + CAST(ERROR_NUMBER() AS VARCHAR (10));
+        PRINT 'Mensagem de ERRO: ' + ERROR_MESSAGE();
+    END CATCH
+SELECT * FROM conta;
+
+GO
+
+-- PROCEDURE + TRANSCATIO + TRY CATCH
+    -- Inserir um novo usuario no banco (nao permita nomes duplicados)
+
+
+
+CREATE OR ALTER PROCEDURE dbo.sp_InserirUsuario
+   @Id int = 0,
+   @Nome  varchar(50),
+   @Saldo MONEY
+   AS
+   BEGIN
+        BEGIN TRY
+
+            BEGIN TRAN;
+
+                IF NOT EXISTS(SELECT 1 FROM CONTA WHERE @Id = id AND @Nome = nome)
+                    BEGIN 
+                        INSERT INTO CONTA(id, nome, Saldo)
+                        VALUES (@Id, @Nome, @Saldo)
+                    END;
+                    COMMIT TRAN
+            END TRY
+            BEGIN CATCH
+                        ROLLBACK
+                        PRINT 'ERRO'
+                        PRINT 'Número: ' + CAST(ERROR_NUMBER() AS VARCHAR (10));
+                        PRINT 'Mensagem de ERRO: ' + ERROR_MESSAGE();
+            END CATCH  
+   END;
+   
+
+EXEC dbo.sp_InserirUsuario 
+    @Id = 10, 
+    @Nome = 'OO', 
+    @Saldo = 150.00;
+
+SELECT * FROM CONTA
+
 
 - 11/09 -
 
