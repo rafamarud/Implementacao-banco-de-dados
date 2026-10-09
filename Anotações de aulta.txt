@@ -21,6 +21,12 @@ Sequencia de códigos executados em bloco
 	-DURABILIDADE
 		- Uma vez comitada, a transção permanece mesmo após falhas no sistema, dados permanecem
 			no armazanemanto.
+-COMANDOS
+	-BEGIN TRANSACTION
+	-COMMIT TRANSACTION
+	-ROLLBACK TRANSACTION
+	-SAVEPOINT (DEFINE UM PONTO DENTRO DA TRANSAÇÂO PARA DAR UM ROLLBACK PARCIAL ATE AQUELE PONTO)
+
 
 - 11/09 -
 
