@@ -1,3 +1,27 @@
+- 09/10 -
+
+-- TRANSAÇÕES --
+Sequencia de códigos executados em bloco
+-Após visualização do estado do banco
+	-Comitado
+		- Alterações são feitas
+	-RollBack
+		- Alteraões desfeitas
+
+-ACID
+	-ATOMICIDADE(não divisível)
+		- Transação é tratada como uma unica unidade, deve ser completamente incluída
+			(não podem serem feitas apenas metade das alterações da transação)
+	-CONSISTÊNCIA
+		- Garante que o a transação leve o banco para um estado válido (sem quebrar nenuhma regra
+			anteriormente definida)
+	-ISOLAMENTO
+		- Transações sao feitas de maneira isolada, de maneira que nao afetem outras operações
+			(um requesição por vez)
+	-DURABILIDADE
+		- Uma vez comitada, a transção permanece mesmo após falhas no sistema, dados permanecem
+			no armazanemanto.
+
 - 11/09 -
 
 -- FUNÇÔES -- 
