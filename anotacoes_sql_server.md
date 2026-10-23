@@ -1,5 +1,29 @@
 # 📚 Anotações de Aula — SQL Server
 ARRUMAR "
+--VIEW
+CREATE OR ALTER VIEW vw_rh_funcionario_dp
+AS
+SELECT 
+	CONCAT(Pnome,' ', Minicial, '. ', Unome) AS 'Nome',
+	DATEDIFF(YEAR, Datanasc, GETDATE()) AS 'Idade',
+	Endereco AS 'Endereço',
+	Data_Admissao AS 'Admissão',
+	D.Dnome AS 'Departamento'
+FROM FUNCIONARIO AS F
+JOIN DEPARTAMENTO AS D
+ON F.Dnr = D.Dnumero;
+GO
+
+
+SELECT *
+FROM vw_rh_funcionario_dp 
+WHERE Departamento = 'Matriz'
+
+SELECT * 
+FROM vw_rh_funcionario_dp ORDER BY 'Departamento'
+
+
+
 -- Função UPDATE()
 -- Verificar se um nome foi alterado
 CREATE OR ALTER TRIGGER trg_for_update_nome
