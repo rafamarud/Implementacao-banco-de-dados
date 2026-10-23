@@ -1,5 +1,6 @@
 - 23/10 -
 
+
 -- TRIGGERS --
 -Tipo especial de Stored Procedure
 	- Executado automaticamente quando o usuario realiza uma operação
