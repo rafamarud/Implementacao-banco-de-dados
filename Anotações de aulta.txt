@@ -1,5 +1,10 @@
 - 23/10 -
 
+-- VIEW
+	- SELECT salvo em formato de tabela
+	- Aumentar produtividade da equipe de desonvolvimento
+	- Pode conter códigos simples e até mesmo SELECT's complexos
+
 
 -- TRIGGERS --
 -Tipo especial de Stored Procedure
