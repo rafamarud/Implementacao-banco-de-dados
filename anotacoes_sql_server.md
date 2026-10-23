@@ -1,5 +1,130 @@
 # 📚 Anotações de Aula — SQL Server
 ARRUMAR "
+-- Função UPDATE()
+-- Verificar se um nome foi alterado
+CREATE OR ALTER TRIGGER trg_for_update_nome
+ON DEPARTAMENTO
+FOR UPDATE -- FOR = AFTER
+AS 
+BEGIN
+	DECLARE @nome_antigo VARCHAR(40),
+			@nome_novo VARCHAR(40)
+	SELECT @nome_antigo = D.Dnome FROM deleted AS D;
+	SELECT @nome_novo = I.Dnome FROM inserted as I;
+	IF UPDATE(Dnome)
+	BEGIN
+		PRINT 'O nome era: ' + @nome_antigo;
+		PRINT 'O novo nome é: ' + @nome_novo;
+	END
+	ELSE
+		PRINT 'O nome não foi alterado'
+END
+
+UPDATE DEPARTAMENTO
+SET Dnome = 'Tecnologia'
+WHERE Dnome = 'TI'
+
+UPDATE DEPARTAMENTO
+SET Dnumero = 9
+WHERE Dnome = 'Estoque'
+
+GO
+
+SELECT * FROM DEPARTAMENTO
+
+
+
+CREATE TABLE LOG_FUNCIONARIO (
+	log_id INT IDENTITY(100,1) PRIMARY KEY,
+	cpf CHAR(11),
+	operacao VARCHAR(10),
+	data_hora DATETIME DEFAULT GETDATE()
+	
+
+)
+GO;
+-- TRIGGER de log de Insert
+CREATE TRIGGER trg_for_insert_funcionario 
+ON FUNCIONARIO 
+FOR INSERT 
+AS 
+BEGIN
+   
+    
+    INSERT INTO LOG_FUNCIONARIO (cpf, operacao) 
+    SELECT I.Cpf, 'INSERT' 
+    FROM inserted AS I;
+END;
+GO
+
+
+-- TRIGGER de log de UPDATE
+CREATE TRIGGER trg_for_update_funcionario
+ON FUNCIONARIO
+FOR UPDATE
+AS
+BEGIN
+	INSERT INTO LOG_FUNCIONARIO (cpf, operacao)
+	SELECT I.Cpf, 'UPDATE'
+	FROM inserted AS I
+END
+GO
+
+-- TRIGGER de log de DELETE
+CREATE TRIGGER trg_for_delete_funcionario
+ON FUNCIONARIO
+FOR DELETE
+AS
+BEGIN
+	INSERT INTO LOG_FUNCIONARIO (cpf, operacao)
+	SELECT D.Cpf, 'DELETE'
+	FROM deleted AS D
+END
+
+INSERT INTO FUNCIONARIO (Pnome, Unome, Cpf, Datanasc, Endereco, Sexo, Salario, Bonus, Data_Admissao, dnr)
+VALUES ('Juca','da Silva', '45623495720','2005-06-08', 'Rua sete', 'M', 1100, 0, '2026-10-23', 8);
+
+SELECT * FROM DEPARTAMENTO
+
+SELECT * FROM FUNCIONARIO ORDER BY Pnome;
+SELECT * FROM LOG_FUNCIONARIO
+
+UPDATE FUNCIONARIO
+SET SALARIO = 100
+WHERE Cpf = '45623495720';
+
+DELETE FROM FUNCIONARIO
+WHERE Cpf = '45623495720';
+
+GO
+-- TRIGGER de log insert, update, delete
+
+CREATE TRIGGER trg_for_IDU_funcionario
+ON FUNCIONARIO
+FOR INSERT, DELETE, UPDATE
+AS
+BEGIN
+	-- SE update
+	IF EXISTS (SELECT * FROM inserted)
+	BEGIN
+		IF EXISTS (SELECT * FROM inserted)
+			INSERT INTO LOG_FUNCIONARIO (cpf, operacao)
+			SELECT I.Cpf, 'UPDATE'
+			FROM inserted AS I
+		ELSE
+			INSERT INTO LOG_FUNCIONARIO (cpf, operacao) 
+			SELECT I.Cpf, 'INSERT' 
+			FROM inserted AS I;
+	END		
+	ELSE
+			INSERT INTO LOG_FUNCIONARIO (cpf, operacao)
+			SELECT D.Cpf, 'DELETE'
+			FROM deleted AS D
+	
+
+END
+
+
 CREATE OR ALTER TRIGGER trg_insteadof_inserir_dpt
 ON DEPARTAMENTO
 INSTEAD OF INSERT
