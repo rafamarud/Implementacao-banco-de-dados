@@ -1,5 +1,122 @@
 # 📚 Anotações de Aula — SQL Server
+ARRUMAR "
+CREATE OR ALTER TRIGGER trg_insteadof_inserir_dpt
+ON DEPARTAMENTO
+INSTEAD OF INSERT
+AS
+BEGIN
+	
+	DECLARE @nome VARCHAR(40), @numero INT;
+	SELECT @nome = I.Dnome, @numero = Dnumero FROM inserted AS I
+	
+	SELECT @nome = I.Dnome, @numero = Dnumero FROM inserted AS I
+	IF EXISTS(SELECT 1 FROM DEPARTAMENTO AS D WHERE D.Dnome = @Nome)
+		RAISERROR('Já existe um departamento com esse nome', 16, 1);
+	ELSE
+		INSERT INTO DEPARTAMENTO (Dnumero, Dnome, Cpf_gerente, Data_inicio_gerente)
+		SELECT I.Dnumero, I.Dnome, I.Cpf_gerente, I.Data_inicio_gerente 
+		FROM inserted AS I
+END	
+GO
 
+
+
+INSERT INTO DEPARTAMENTO (Dnumero, Dnome)
+VALUES (87, 'Expedição');
+GO
+
+
+
+
+CREATE OR ALTER TRIGGER trg_after_Insere_dpt
+ON DEPARTAMENTO
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @nome VARCHAR(40), @numero INT;
+	SELECT @nome = I.Dnome FROM inserted AS I
+
+	SELECT * FROM DEPARTAMENTO;
+
+	IF ((SELECT COUNT(Dnome) FROM DEPARTAMENTO WHERE Dnome = @nome) > 1)
+	BEGIN
+		ROLLBACK TRANSACTION;
+		RAISERROR('Já existe um departamento com esse nome', 16, 1);
+	END
+END
+GO
+
+INSERT INTO DEPARTAMENTO (Dnumero, Dnome)
+VALUES (87, 'Expedição');
+GO
+SELECT * FROM DEPARTAMENTO
+GO
+
+-- Função UPDATE()
+-- Verificar se um nome foi alterado
+CREATE OR ALTER TRIGGER trg_for_update_nome
+ON DEPARTAMENTO
+FOR UPDATE -- FOR = AFTER
+AS 
+BEGIN
+	DECLARE @nome_antigo VARCHAR(40),
+			@nome_novo VARCHAR(40)
+	SELECT @nome_antigo = D.Dnome FROM deleted AS D;
+	SELECT @nome_novo = I.Dnome FROM inserted as I;
+	IF UPDATE(Dnome)
+	BEGIN
+		PRINT 'O nome era: ' + @nome_antigo;
+		PRINT 'O novo nome é: ' + @nome_novo;
+	END
+	ELSE
+		PRINT 'O nome não foi alterado'
+END
+
+UPDATE DEPARTAMENTO
+SET Dnome = 'Tecnologia'
+WHERE Dnome = 'TI'
+
+UPDATE DEPARTAMENTO
+SET Dnumero = 9
+WHERE Dnome = 'Estoque'
+
+GO
+
+SELECT * FROM DEPARTAMENTO
+
+
+CREATE TRIGGER trg_after_insert_dpt
+ON DEPARTAMENTO
+AFTER INSERT
+AS
+BEGIN
+	PRINT 'Olá meu primeiro TRIGGER!'
+END;
+GO
+
+INSERT INTO DEPARTAMENTO (Dnumero, Dnome)
+VALUES (88, 'Expedição');
+GO
+
+CREATE TRIGGER trg_insteadof_delete_dpt
+ON DEPARTAMENTO
+INSTEAD OF DELETE
+AS
+BEGIN
+	PRINT 'NÃO DELETEI o registro';
+END
+
+DELETE 
+FROM DEPARTAMENTO
+WHERE Dnumero = 88;
+
+SELECT * FROM DEPARTAMENTO;
+
+ALTER TABLE DEPARTAMENTO
+DISABLE TRIGGER trg_insteadof_delete_dpt;
+
+EXEC sp_helptrigger DEPARTAMENTO;
+"
 ---
 
 ## 1. Fundamentos e Cláusulas Básicas (`SELECT`, `WHERE`, Agregações)
