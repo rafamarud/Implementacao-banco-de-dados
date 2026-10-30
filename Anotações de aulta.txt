@@ -1,6 +1,35 @@
+- 30/10 -
+-- RESTRIÇÃO E INTEGRIDADE --
+- Integridade de domínio: Restringe os valores permitidos em uma coluna específica.
+
+- Integridade Referencial: Garante que as chaves estrangeiras apontem para chaves primárias válidas.
+
+- Integridade de Vazio: Define se uma coluna pode ou não aceitar valores nulos.
+
+- Integridade de Chave: Garante que cada registro tenha um identificador exclusivo e único.
+
+- Integridade Definida pelo Usuário: Aplica regras de negócio específicas criadas pelo programador.
+
+
+
+
 - 23/10 -
 
--- VIEW
+-REVISÃO
+	*TRIGGERS
+		-DML - INSERT, UPDATE, DELETE
+			E.C.A - Evento, Condição, ação
+		-AFTER ou FOR
+		-INSTEAD OF
+		-INSERTED
+		-DELETED
+		-UPDATED(Coluna)
+	*VIEWS
+		-Tabela Virtual
+		-Consulta SQL
+
+
+-- VIEW --
 	- SELECT salvo em formato de tabela
 	- Aumentar produtividade da equipe de desonvolvimento
 	- Pode conter códigos simples e até mesmo SELECT's complexos
