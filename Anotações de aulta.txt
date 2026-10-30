@@ -1,4 +1,7 @@
 - 30/10 -
+-- 
+
+
 -- RESTRIÇÃO E INTEGRIDADE --
 - Integridade de domínio: Restringe os valores permitidos em uma coluna específica.
 
